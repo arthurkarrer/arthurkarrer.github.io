@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arthur Karrer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:       #0a0a0a;
+      --surface:  #111111;
+      --border:   #1f1f1f;
+      --text:     #e8e2d9;
+      --muted:    #5a5550;
+      --accent:   #c9a96e;
+      --accent-dim: rgba(201, 169, 110, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      overflow: hidden;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Grid lines ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: 48px;
+    }
+
+    /* ── Center block ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards;
+      animation-delay: 0.1s;
+    }
+
+    .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(64px, 10vw, 128px);
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      opacity: 0;
+      animation: fade-up 0.8s ease forwards;
+      animation-delay: 0.25s;
+    }
+
+    .name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0;
+      animation: expand 0.6s ease forwards;
+      animation-delay: 0.5s;
+    }
+
+    .tagline {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      max-width: 320px;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards;
+      animation-delay: 0.65s;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: var(--accent-dim);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      width: fit-content;
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards;
+      animation-delay: 0.85s;
+    }
+
+    .status-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+
+    /* ── Footer ── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards;
+      animation-delay: 1s;
+    }
+
+    .footer-left {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .footer-right {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    /* ── Corner accents ── */
+    .corner {
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      opacity: 0;
+      animation: fade-in 0.4s ease forwards;
+      animation-delay: 1.1s;
+    }
+    .corner--tl { top: 24px; left: 24px; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+    .corner--tr { top: 24px; right: 24px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+    .corner--bl { bottom: 24px; left: 24px; border-bottom: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+    .corner--br { bottom: 24px; right: 24px; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+
+    /* ── Animations ── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes expand {
+      from { opacity: 0; width: 0; }
+      to   { opacity: 1; width: 48px; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="corner corner--tl"></div>
+  <div class="corner corner--tr"></div>
+  <div class="corner corner--bl"></div>
+  <div class="corner corner--br"></div>
+
+  <main>
+    <section class="hero">
+      <span class="label">Portfolio — Coming Soon</span>
+
+      <h1 class="name">
+        Arthur<br /><em>Karrer</em>
+      </h1>
+
+      <div class="divider"></div>
+
+      <p class="tagline">
+        Software Engineer<br />
+        .NET · C# · Backend Systems
+      </p>
+
+      <div class="status-badge">
+        Site under construction
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-left">
+        arthurkarrer.me<br />
+        São Paulo, Brazil
+      </div>
+      <div class="footer-right">
+        &copy; 2025<br />
+        All rights reserved
+      </div>
+    </footer>
+  </main>
+
+</body>
+</html>
